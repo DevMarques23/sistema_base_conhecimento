@@ -7,8 +7,8 @@ CHAMADOS com as colunas: id,numero_chamado,nome_cliente,nome_modulo,descricao_er
 
 #Senhas:
 *As senhas são crptografadas ao serem salvas no banco de dados.
+*Após criar os usuarios via banco, é necessário rodar o atualizar_senhas.py para que o sistema criptografe a senha atual e seja possível realizar o primeiro login na página
 *Ao fazer o primeiro login é solicitado a alteração de senha
-*Após criar o primeiro usuário via banco, é necessário rodar o atualizar_senhas.py para que o sistema criptografe a senha atual e seja possível realizar o login na página
 
 #Anexos:
 Os anexos são salvos no /static/uploads/
