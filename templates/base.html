@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Chamados</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <div class="navbar-custom text-center">
+    <a href="{{ url_for('index') }}">Página Inicial</a>
+    <a href="{{ url_for('criar_chamado') }}">Criar Chamado</a>
+    <a href="{{ url_for('logout') }}">Sair</a>  <!-- Botão de Sair -->
+
+</div>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Chamados</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('criar_chamado') }}">Criar Chamado</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+<style>
+    /* Estilo para o corpo da página */
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Garante que o corpo ocupe pelo menos a altura da janela */
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Estilo para o conteúdo principal */
+    .conteudo {
+        flex: 1; /* Faz o conteúdo principal ocupar o espaço restante */
+        padding: 20px;
+        overflow-y: auto; /* Adiciona barra de rolagem interna, se necessário */
+    }
+
+    /* Estilo para garantir que o texto quebre corretamente */
+    .texto-quebra {
+        word-wrap: break-word; /* Quebra palavras longas */
+        white-space: pre-wrap; /* Mantém quebras de linha e espaços */
+        overflow-wrap: break-word; /* Similar ao word-wrap, mas mais moderno */
+    }
+
+    /* Estilo para o rodapé */
+    .rodape {
+        background-color: #800080; /* Cor preta */
+        color: #fff; /* Cor branca para o texto */
+        text-align: center;
+        padding: 10px 0;
+    }
+
+</style>
+</html>
