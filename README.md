@@ -1,4 +1,4 @@
-Olá, seja bem vindo ao meu programa de Brainstorm, onde são cadastrado erros de sistema e compartilhado entre os colegas.
+Olá, seja bem vindo ao meu programa de Brainstorm via Pyhon com o Framework Flask, onde são cadastrado erros de sistema e compartilhado entre os colegas.
 
 #Banco de dados (SQLSERVER)
 O banco de dados é SQLSERVER formado pelas tabelas: 
