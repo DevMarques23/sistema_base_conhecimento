@@ -39,6 +39,18 @@
             border-color: #6a006a;
         }
 
+        /* Estilo personalizado para o botão laranja */
+        .btn-laranja {
+            background-color: #ffa500; /* Cor laranja */
+            border-color: #ffa500; /* Cor da borda */
+            color: #fff; /* Cor do texto */
+        }
+
+        .btn-laranja:hover {
+            background-color: #f09b00; /* Cor laranja mais escura ao passar o mouse */
+            border-color: #f09b00;
+        }
+
         /* Estilo para o rodapé */
         .developed-by {
             position: fixed;
@@ -46,6 +58,15 @@
             right: 10px;
             font-size: 14px;
             color: #666;
+        }
+
+        /* Estilo para alinhar os botões */
+        .button-group {
+            display: flex;
+            justify-content: flex-start; /* Alinha os botões à esquerda */
+            align-items: center;
+            margin-top: 15px;
+            gap: 15px; /* Espaço entre os botões */
         }
     </style>
 </head>
@@ -56,7 +77,7 @@
     </div>
 
     <div class="container">
-        <h2 class="text-center">Chamado {{ chamado.numero_chamado }}</h2>
+        <h2 class="text-center">CHAMADO #{{ chamado.numero_chamado }}</h2>
         <div class="chamado-detalhes">
             <p><strong>Cliente:</strong> {{ chamado.nome_cliente }}</p>
             <p><strong>Módulo:</strong> {{ chamado.nome_modulo }}</p>
@@ -64,8 +85,16 @@
             <textarea class="caixa-texto" rows="5" readonly>{{ chamado.descricao_erro }}</textarea>
             <p><strong>Solução:</strong></p>
             <textarea class="caixa-texto" rows="5" readonly>{{ chamado.solucao }}</textarea>
-            <p><strong>Usuário de Inclusão:</strong> {{ chamado.usuario_inclusao }}</p>
+            <p><strong>Usuário de Inclusão:</strong> {{ chamado.usuario_inclusao }} - <strong>Data de Inclusão:</strong> {{ chamado.data_cadastro.strftime('%d/%m/%Y %H:%M') }}</p>
         </div>
+
+        <!-- Verifica se o usuário logado é o responsável pela inclusão -->
+        {% if current_user.username == chamado.usuario_inclusao %}
+            <div class="button-group">
+                <a href="{{ url_for('editar_chamado', numero_chamado=chamado.numero_chamado) }}" class="btn btn-warning">Editar Chamado</a>
+            </div>
+        {% endif %}
+
         <div class="anexos-lista">
             <h2>Anexos:</h2>
             {% if chamado.arquivo %}
@@ -77,15 +106,15 @@
                     {% endfor %}
                 </ul>
                 <!-- Botão "Baixar Todos os Anexos (.zip)" -->
-                <a href="{{ url_for('baixar_anexos', numero_chamado=chamado.numero_chamado) }}" class="btn btn-roxo mt-3">
-                    Baixar Todos os Anexos (.zip)
-                </a>
+                <div class="button-group">
+                    <a href="{{ url_for('baixar_anexos', numero_chamado=chamado.numero_chamado) }}" class="btn btn-roxo">
+                        Baixar Todos os Anexos (.zip)
+                    </a>
+                    <a href="{{ url_for('listar_chamados') }}" class="btn btn-laranja">Voltar</a>
+                </div>
             {% else %}
                 <p>Nenhum anexo disponível.</p>
             {% endif %}
-        </div>
-        <div class="text-center mt-3">
-            <a href="{{ url_for('listar_chamados') }}" class="btn btn-secondary">Voltar</a>
         </div>
     </div>
 

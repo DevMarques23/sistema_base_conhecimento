@@ -49,6 +49,8 @@ class Chamado(db.Model):
     solucao = db.Column(db.String(500))
     arquivo = db.Column(db.String(120))
     usuario_inclusao = db.Column(db.String(80), nullable=False)
+    data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 # Carrega o usuário para o Flask-Login
 @login_manager.user_loader
@@ -124,6 +126,7 @@ def listar_chamados():
         chamados = Chamado.query.filter(
             (Chamado.numero_chamado.contains(termo_pesquisa)) |
             (Chamado.descricao_erro.contains(termo_pesquisa)) |
+            (Chamado.nome_cliente.contains(termo_pesquisa)) |
             (Chamado.solucao.contains(termo_pesquisa))
         ).all()
     else:
@@ -162,7 +165,8 @@ def criar_chamado():
             descricao_erro=descricao_erro,
             solucao=solucao,
             arquivo=", ".join(nomes_arquivos) if nomes_arquivos else None,
-            usuario_inclusao=current_user.username
+            usuario_inclusao=current_user.username,
+            data_cadastro = datetime.utcnow()
         )
         db.session.add(novo_chamado)
         db.session.commit()
@@ -179,6 +183,44 @@ def visualizar_chamado(numero_chamado):
     if chamado:
         return render_template('chamado.html', chamado=chamado)
     return "Chamado não encontrado", 404
+
+# Rota para editar um chamado
+@app.route('/editar_chamado/<int:numero_chamado>', methods=['GET', 'POST'])
+@login_required
+def editar_chamado(numero_chamado):
+    chamado = Chamado.query.filter_by(numero_chamado=numero_chamado).first()
+    if not chamado:
+        flash('Chamado não encontrado', 'error')
+        return redirect(url_for('listar_chamados'))
+
+    # Verificar se o usuário tem permissão para editar (somente o usuário que criou pode editar)
+    if chamado.usuario_inclusao != current_user.username:
+        flash('Você não tem permissão para editar este chamado', 'error')
+        return redirect(url_for('listar_chamados'))
+
+    if request.method == 'POST':
+        chamado.nome_cliente = request.form['nome_cliente']
+        chamado.nome_modulo = request.form['nome_modulo']
+        chamado.descricao_erro = request.form['descricao_erro']
+        chamado.solucao = request.form['solucao']
+
+        # Processar novos arquivos anexados
+        arquivos = request.files.getlist('arquivos')
+        nomes_arquivos = []
+        for arquivo in arquivos:
+            if arquivo.filename != '':
+                filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{arquivo.filename}"
+                arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                nomes_arquivos.append(filename)
+
+        if nomes_arquivos:
+            chamado.arquivo = ", ".join(nomes_arquivos)
+
+        db.session.commit()
+        flash('Chamado atualizado com sucesso', 'success')
+        return redirect(url_for('visualizar_chamado', numero_chamado=chamado.numero_chamado))
+
+    return render_template('editar_chamado.html', chamado=chamado)
 
 # Rota para baixar anexos como .zip
 @app.route('/baixar_anexos/<int:numero_chamado>')
@@ -216,4 +258,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(host='127.0.0.1', port=5000)
-    #app.run(debug=True)
